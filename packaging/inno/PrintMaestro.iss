@@ -34,6 +34,7 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=lowest
+SetupIconFile=..\..\src\PrintMaestro\Assets\Icons\app.ico
 UninstallDisplayIcon={app}\{#MyAppExe}
 InfoBeforeFile=Prerequisites.txt
 

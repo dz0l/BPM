@@ -5,9 +5,17 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
 
 permissions:
   contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   publish:
@@ -15,6 +23,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -33,6 +43,10 @@ jobs:
         shell: pwsh
         run: ./scripts/build-release.ps1 -Configuration Release
 
+      - name: List dist artifacts
+        shell: pwsh
+        run: Get-ChildItem dist | Format-Table Name, Length -AutoSize
+
       - name: Publish MSIX (optional)
         shell: pwsh
         continue-on-error: true
@@ -41,10 +55,11 @@ jobs:
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          fail_on_unmatched_files: false
           files: |
             dist/PrintMaestro-*-Setup.exe
             dist/PrintMaestro-*-Setup.exe.sha256
             dist/PrintMaestro-*-win-x64.zip
             dist/PrintMaestro-*-win-x64.zip.sha256
-            dist/PrintMaestro-*.msix
           generate_release_notes: true

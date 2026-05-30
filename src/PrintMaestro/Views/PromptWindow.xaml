@@ -5,6 +5,7 @@
         SizeToContent="WidthAndHeight"
         MinWidth="360"
         WindowStartupLocation="CenterOwner"
+        Icon="/Assets/Icons/app.ico"
         ResizeMode="NoResize"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica">

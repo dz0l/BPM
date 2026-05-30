@@ -11,6 +11,7 @@
         MinHeight="640"
         AllowDrop="True"
         WindowStartupLocation="CenterScreen"
+        Icon="/Assets/Icons/app.ico"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica">
     <Grid>
@@ -26,7 +27,7 @@
                      ShowMaximize="True"
                      ShowClose="True">
             <ui:TitleBar.Icon>
-                <ui:SymbolIcon Symbol="Print24" />
+                <ui:ImageIcon Source="pack://application:,,,/Assets/Icons/app.png" />
             </ui:TitleBar.Icon>
             <ui:TitleBar.TrailingContent>
                 <StackPanel Orientation="Horizontal">

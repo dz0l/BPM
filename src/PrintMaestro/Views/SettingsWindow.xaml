@@ -9,6 +9,7 @@
         MinHeight="420"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
+        Icon="/Assets/Icons/app.ico"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Acrylic">
     <Grid>
@@ -67,6 +68,12 @@
                     <TextBlock Text="{DynamicResource Settings.Tab.About}" />
                 </TabItem.Header>
                 <StackPanel Margin="8">
+                    <Image Source="/Assets/Icons/app.png"
+                           Width="96"
+                           Height="96"
+                           HorizontalAlignment="Left"
+                           Margin="0,0,0,12"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
                     <TextBlock Text="{DynamicResource About.Title}"
                                FontSize="18"
                                FontWeight="SemiBold"
