@@ -24,8 +24,11 @@ public partial class MainWindow : FluentWindow
 
         Loaded += OnLoadedAsync;
         Closing += OnClosing;
-        DragOver += OnDragOver;
-        Drop += OnDrop;
+        StateChanged += OnWindowStateChanged;
+
+        AllowDrop = true;
+        AddHandler(DragDrop.PreviewDragOverEvent, new DragEventHandler(OnPreviewDragOver), true);
+        AddHandler(DragDrop.PreviewDropEvent, new DragEventHandler(OnPreviewFileDrop), true);
     }
 
     private async void OnLoadedAsync(object sender, RoutedEventArgs e)
@@ -39,7 +42,38 @@ public partial class MainWindow : FluentWindow
         {
             await viewModel.InitializeAsync(CancellationToken.None);
         }
+
+        UpdateMaximizeButtonIcon();
     }
+
+    private void OnWindowStateChanged(object? sender, EventArgs e) => UpdateMaximizeButtonIcon();
+
+    private void UpdateMaximizeButtonIcon()
+    {
+        if (MaximizeWindowButton is null)
+        {
+            return;
+        }
+
+        MaximizeWindowButton.Icon = new SymbolIcon
+        {
+            Symbol = WindowState == WindowState.Maximized
+                ? SymbolRegular.SquareMultiple24
+                : SymbolRegular.Maximize24
+        };
+
+        MaximizeWindowButton.ToolTip = WindowState == WindowState.Maximized
+            ? FindResource("Window.Restore")
+            : FindResource("Window.Maximize");
+    }
+
+    private void OnMinimizeWindowClick(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState.Minimized;
+
+    private void OnMaximizeWindowClick(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    private void OnCloseWindowClick(object sender, RoutedEventArgs e) => Close();
 
     private void OnClosing(object? sender, CancelEventArgs e)
     {
@@ -57,22 +91,20 @@ public partial class MainWindow : FluentWindow
         viewModel.StopPrintingAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    private void OnDragOver(object sender, DragEventArgs e)
+    private void OnPreviewDragOver(object sender, DragEventArgs e)
     {
-        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!IsExternalFileDrop(e))
         {
-            e.Effects = DragDropEffects.Copy;
-            e.Handled = true;
             return;
         }
 
-        e.Effects = DragDropEffects.None;
+        e.Effects = DragDropEffects.Copy;
         e.Handled = true;
     }
 
-    private void OnDrop(object sender, DragEventArgs e)
+    private void OnPreviewFileDrop(object sender, DragEventArgs e)
     {
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+        if (!IsExternalFileDrop(e))
         {
             return;
         }
@@ -85,4 +117,8 @@ public partial class MainWindow : FluentWindow
         viewModel.AddDroppedPaths(paths);
         e.Handled = true;
     }
+
+    private static bool IsExternalFileDrop(DragEventArgs e) =>
+        e.Data.GetDataPresent(DataFormats.FileDrop)
+        && e.Data.GetData(DataFormats.FileDrop) is string[];
 }

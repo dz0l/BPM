@@ -9,6 +9,10 @@
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <BitmapImage x:Key="AppLogoImage"
+                         UriSource="pack://application:,,,/Assets/Icons/app.png"
+                         CacheOption="OnLoad"
+                         CreateOptions="PreservePixelFormat" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

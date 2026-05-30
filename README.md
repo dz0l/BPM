@@ -29,7 +29,7 @@ Desktop Windows app for **batch sequential printing** of PDF, Office, image, and
 | Category | Extensions |
 |----------|------------|
 | PDF | `.pdf` |
-| Microsoft Office | `.doc`, `.docx`, `.xls`, `.xlsx` (requires Office; PowerPoint — позже) |
+| Microsoft Office | `.doc`, `.docx`, `.xls`, `.xlsx` (requires Office; PowerPoint planned later) |
 | Text | `.txt` |
 | Images | `.png`, `.jpg`, `.jpeg`, `.bmp`, `.heic`, `.tiff`, `.webp` |
 
@@ -59,30 +59,7 @@ Requires [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/
 1. Download `PrintMaestro-x.x.x-win-x64.zip` from Releases.
 2. Extract anywhere and run `PrintMaestro.exe`.
 
-### Build from source
-
-```powershell
-git clone https://github.com/dz0l/BPM.git
-cd BPM
-dotnet build PrintMaestro.slnx -c Release
-dotnet run --project src/PrintMaestro/PrintMaestro.csproj -c Release
-```
-
-Build packages locally:
-
-```powershell
-./scripts/build-release.ps1 -Configuration Release  # ZIP + Setup.exe + SHA256
-./scripts/publish-portable.ps1 -Configuration Release   # ZIP only
-./scripts/publish-inno.ps1 -Configuration Release       # ZIP + Setup.exe
-./scripts/publish-msix.ps1 -Configuration Release       # MSIX (needs VS MSIX tooling)
-```
-
-Publish to GitHub Releases (creates assets automatically):
-
-```powershell
-git tag v1.0.0
-git push origin v1.0.0
-```
+Same runtime requirement as the installer.
 
 ---
 

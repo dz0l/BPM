@@ -23,12 +23,11 @@
         <ui:TitleBar x:Name="TitleBar"
                      Grid.Row="0"
                      Title="{DynamicResource App.Title}"
-                     ShowMinimize="True"
-                     ShowMaximize="True"
-                     ShowClose="True">
-            <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="pack://application:,,,/Assets/Icons/app.png" />
-            </ui:TitleBar.Icon>
+                     Icon="{ui:ImageIcon '/Assets/Icons/app-titlebar.png'}"
+                     ButtonsBackground="Transparent"
+                     ShowMinimize="False"
+                     ShowMaximize="False"
+                     ShowClose="False">
             <ui:TitleBar.TrailingContent>
                 <StackPanel Orientation="Horizontal">
                     <ui:Button Appearance="Transparent"
@@ -39,11 +38,28 @@
                                ToolTip="{DynamicResource Menu.Settings}"
                                Icon="{ui:SymbolIcon Symbol=Settings24}"
                                Command="{Binding OpenSettingsCommand}" />
+                    <ui:Button x:Name="MinimizeWindowButton"
+                               Appearance="Transparent"
+                               ToolTip="{DynamicResource Window.Minimize}"
+                               Icon="{ui:SymbolIcon Symbol=Subtract24}"
+                               Click="OnMinimizeWindowClick" />
+                    <ui:Button x:Name="MaximizeWindowButton"
+                               Appearance="Transparent"
+                               ToolTip="{DynamicResource Window.Maximize}"
+                               Icon="{ui:SymbolIcon Symbol=Maximize24}"
+                               Click="OnMaximizeWindowClick" />
+                    <ui:Button Appearance="Transparent"
+                               ToolTip="{DynamicResource Window.Close}"
+                               Icon="{ui:SymbolIcon Symbol=Dismiss24}"
+                               Click="OnCloseWindowClick" />
                 </StackPanel>
             </ui:TitleBar.TrailingContent>
         </ui:TitleBar>
 
-        <Grid Grid.Row="1" Margin="24">
+        <Grid x:Name="ContentGrid"
+              Grid.Row="1"
+              Margin="24"
+              AllowDrop="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -85,13 +101,23 @@
                            Visibility="{Binding ShowCancelPrint, Converter={StaticResource BoolToVis}}" />
             </StackPanel>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1"
+                  VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="420" />
                     <ColumnDefinition Width="320" />
                 </Grid.ColumnDefinitions>
 
-                <ui:Card Grid.Column="0" Margin="0,0,16,0" Padding="16">
+                <Border Grid.Column="0"
+                        Margin="0,0,16,0"
+                        Padding="16"
+                        CornerRadius="8"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        AllowDrop="True">
                     <DockPanel LastChildFill="True">
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
                             <TextBlock Text="{DynamicResource Queue.Title}"
@@ -108,9 +134,16 @@
                                   dd:DragDrop.IsDragSource="True"
                                   dd:DragDrop.IsDropTarget="True"
                                   dd:DragDrop.DropHandler="{Binding}"
+                                  VerticalAlignment="Stretch"
+                                  HorizontalAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch"
+                                  Background="Transparent"
+                                  BorderThickness="0"
                                   VirtualizingPanel.IsVirtualizing="True"
                                   VirtualizingPanel.VirtualizationMode="Recycling"
-                                  ScrollViewer.CanContentScroll="True">
+                                  ScrollViewer.CanContentScroll="True"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -174,9 +207,14 @@
                             </ListView.ItemTemplate>
                         </ListView>
                     </DockPanel>
-                </ui:Card>
+                </Border>
 
-                <ui:Card Grid.Column="1" Padding="16">
+                <ui:Card Grid.Column="1"
+                         Padding="16"
+                         VerticalAlignment="Top"
+                         HorizontalAlignment="Stretch">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
                         <TextBlock Text="{DynamicResource Settings.Title}"
                                    FontSize="16"
@@ -225,6 +263,7 @@
                         <CheckBox Content="{DynamicResource Settings.InsertBlankPageAfter}"
                                   IsChecked="{Binding InsertBlankPageAfter}" />
                     </StackPanel>
+                    </ScrollViewer>
                 </ui:Card>
             </Grid>
 

@@ -9,6 +9,14 @@
         ResizeMode="NoResize"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica">
+    <ui:FluentWindow.Resources>
+        <ResourceDictionary>
+            <BitmapImage x:Key="AppTitleBarImage"
+                         UriSource="pack://application:,,,/Assets/Icons/app-titlebar.png"
+                         CacheOption="OnLoad"
+                         CreateOptions="PreservePixelFormat" />
+        </ResourceDictionary>
+    </ui:FluentWindow.Resources>
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

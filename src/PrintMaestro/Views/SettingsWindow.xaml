@@ -21,6 +21,7 @@
 
         <ui:TitleBar Grid.Row="0"
                      Title="{DynamicResource Settings.AppTitle}"
+                     Icon="{ui:ImageIcon '/Assets/Icons/app-titlebar.png'}"
                      ShowMaximize="False"
                      ShowMinimize="False"
                      ShowClose="True" />
@@ -68,12 +69,16 @@
                     <TextBlock Text="{DynamicResource Settings.Tab.About}" />
                 </TabItem.Header>
                 <StackPanel Margin="8">
-                    <Image Source="/Assets/Icons/app.png"
-                           Width="96"
-                           Height="96"
-                           HorizontalAlignment="Left"
-                           Margin="0,0,0,12"
-                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <Border Width="96"
+                            Height="96"
+                            CornerRadius="20"
+                            Background="Transparent"
+                            ClipToBounds="True"
+                            Margin="0,0,0,12">
+                        <Image Source="{StaticResource AppLogoImage}"
+                               Stretch="UniformToFill"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
                     <TextBlock Text="{DynamicResource About.Title}"
                                FontSize="18"
                                FontWeight="SemiBold"

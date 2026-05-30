@@ -28,6 +28,7 @@
   <ItemGroup>
     <Resource Include="Assets\Icons\app.ico" />
     <Resource Include="Assets\Icons\app.png" />
+    <Resource Include="Assets\Icons\app-titlebar.png" />
   </ItemGroup>
 
   <ItemGroup>

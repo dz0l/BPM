@@ -20,6 +20,7 @@
 
         <ui:TitleBar Grid.Row="0"
                      Title="{DynamicResource History.Title}"
+                     Icon="{ui:ImageIcon '/Assets/Icons/app-titlebar.png'}"
                      ShowMaximize="False"
                      ShowMinimize="False"
                      ShowClose="True" />
