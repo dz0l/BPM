@@ -19,6 +19,17 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        if (!SingleInstanceGuard.TryAcquire())
+        {
+            MessageBox.Show(
+                "Print Maestro is already running.",
+                "Print Maestro",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            Shutdown();
+            return;
+        }
+
         Resources.MergedDictionaries.Add(LocalizationResources);
 
         _host = Host.CreateDefaultBuilder()
@@ -30,6 +41,10 @@ public partial class App : Application
                 services.AddSingleton<IFileDialogService, FileDialogService>();
                 services.AddSingleton<ILocalizationService, JsonLocalizationService>();
                 services.AddSingleton<ISettingsDialogService, SettingsDialogService>();
+                services.AddSingleton<IHistoryDialogService, HistoryDialogService>();
+                services.AddSingleton<INotificationService, SnackbarNotificationService>();
+                services.AddSingleton<IDialogService, DialogService>();
+                services.AddSingleton<IThumbnailService, ThumbnailService>();
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<MainWindow>();
             })
@@ -48,14 +63,33 @@ public partial class App : Application
 
         await localization.InitializeAsync();
 
+        DispatcherUnhandledException += (_, args) =>
+        {
+            Log.Error(args.Exception, "Unhandled UI exception.");
+            MessageBox.Show(
+                args.Exception.Message,
+                "Print Maestro",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            args.Handled = true;
+        };
+
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
     }
 
     protected override async void OnExit(ExitEventArgs e)
     {
+        SingleInstanceGuard.Release();
+
         if (_host is not null)
         {
+            if (_host.Services.GetService(typeof(PrintMaestro.Infrastructure.Workers.IWorkerPrintService))
+                is IAsyncDisposable workerPrintService)
+            {
+                await workerPrintService.DisposeAsync();
+            }
+
             await _host.StopAsync();
             _host.Dispose();
         }

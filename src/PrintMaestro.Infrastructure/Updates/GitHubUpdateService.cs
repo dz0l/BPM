@@ -66,6 +66,31 @@ public sealed class GitHubUpdateService(HttpClient httpClient) : IUpdateService
             await stream.CopyToAsync(file, cancellationToken);
         }
 
+        if (extension.Equals(".zip", StringComparison.OrdinalIgnoreCase))
+        {
+            var updaterScript = Path.Combine(tempRoot, "apply-update.cmd");
+            var appDirectory = AppContext.BaseDirectory.TrimEnd('\\');
+            var exeName = Path.GetFileName(Environment.ProcessPath ?? "PrintMaestro.exe");
+
+            await File.WriteAllTextAsync(updaterScript, $"""
+                @echo off
+                timeout /t 2 /nobreak >nul
+                powershell -NoProfile -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '{packagePath}' -DestinationPath '{appDirectory}' -Force"
+                start "" "{Path.Combine(appDirectory, exeName)}"
+                del "%~f0"
+                """, cancellationToken);
+
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = updaterScript,
+                UseShellExecute = true,
+                CreateNoWindow = true
+            });
+
+            Environment.Exit(0);
+            return;
+        }
+
         if (extension.Equals(".msix", StringComparison.OrdinalIgnoreCase)
             || extension.Equals(".exe", StringComparison.OrdinalIgnoreCase))
         {
@@ -79,26 +104,7 @@ public sealed class GitHubUpdateService(HttpClient httpClient) : IUpdateService
             return;
         }
 
-        var updaterScript = Path.Combine(tempRoot, "apply-update.cmd");
-        var appDirectory = AppContext.BaseDirectory.TrimEnd('\\');
-        var exeName = Path.GetFileName(Environment.ProcessPath ?? "PrintMaestro.exe");
-
-        await File.WriteAllTextAsync(updaterScript, $"""
-            @echo off
-            timeout /t 2 /nobreak >nul
-            tar -xf "{packagePath}" -C "{appDirectory}"
-            start "" "{Path.Combine(appDirectory, exeName)}"
-            del "%~f0"
-            """, cancellationToken);
-
-        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        {
-            FileName = updaterScript,
-            UseShellExecute = true,
-            CreateNoWindow = true
-        });
-
-        Environment.Exit(0);
+        throw new NotSupportedException($"Unsupported update package type: {extension}");
     }
 
     private static Version ParseVersion(string tagName)

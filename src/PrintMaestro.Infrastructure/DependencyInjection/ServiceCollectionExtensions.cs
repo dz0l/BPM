@@ -7,8 +7,10 @@ using PrintMaestro.Core.Updates;
 using PrintMaestro.Infrastructure.Configuration;
 using PrintMaestro.Infrastructure.History;
 using PrintMaestro.Infrastructure.Printers;
+using PrintMaestro.Infrastructure.Printing;
 using PrintMaestro.Infrastructure.Printing.Handlers;
 using PrintMaestro.Infrastructure.Updates;
+using PrintMaestro.Infrastructure.Workers;
 using Serilog;
 
 namespace PrintMaestro.Infrastructure.DependencyInjection;
@@ -21,7 +23,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISettingsStore, JsonSettingsStore>();
         services.AddSingleton<IPrintHistoryRepository, SqlitePrintHistoryRepository>();
         services.AddSingleton<IPrintQueueService, PrintQueueService>();
-        services.AddSingleton<IPrintDispatcher, NoOpPrintDispatcher>();
+        services.AddSingleton<PrintDocumentHandlerRegistry>();
+        services.AddSingleton<IWorkerPrintService, WorkerPrintService>();
+        services.AddSingleton<IPrintDispatcher, ControlledSequentialPrintDispatcher>();
         services.AddSingleton<IPrinterDiscoveryService, SystemPrinterDiscoveryService>();
 
         services.AddSingleton<IPrintDocumentHandler, PdfPrintDocumentHandler>();

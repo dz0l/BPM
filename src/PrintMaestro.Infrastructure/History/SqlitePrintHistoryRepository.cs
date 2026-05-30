@@ -78,6 +78,18 @@ public sealed class SqlitePrintHistoryRepository(IAppPaths appPaths) : IPrintHis
         return entries;
     }
 
+    public async Task ClearAsync(CancellationToken cancellationToken)
+    {
+        await EnsureInitializedAsync(cancellationToken);
+
+        await using var connection = CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM print_history;";
+        await command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
     private async Task EnsureInitializedAsync(CancellationToken cancellationToken)
     {
         if (_initialized)

@@ -8,12 +8,15 @@ public sealed class PrintResult
 
     public string? ErrorMessage { get; init; }
 
+    public bool IsRetryable { get; init; } = true;
+
     public static PrintResult Ok() => new() { Success = true };
 
-    public static PrintResult Fail(string code, string message) => new()
+    public static PrintResult Fail(string code, string message, bool retryable = true) => new()
     {
         Success = false,
         ErrorCode = code,
-        ErrorMessage = message
+        ErrorMessage = message,
+        IsRetryable = retryable
     };
 }

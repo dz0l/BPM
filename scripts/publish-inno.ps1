@@ -28,6 +28,7 @@ if (-not $iscc) {
     throw @"
 Inno Setup 6 (ISCC.exe) not found.
 Install: winget install JRSoftware.InnoSetup
+Or:      winget install --id JRSoftware.InnoSetup -e
 Or:      choco install innosetup -y
 "@
 }
@@ -43,3 +44,8 @@ if (-not (Test-Path $setupPath)) {
 }
 
 Write-Host "Created $setupPath"
+
+$hash = Get-FileHash -Path $setupPath -Algorithm SHA256
+$checksumPath = "$setupPath.sha256"
+Set-Content -Path $checksumPath -Value ("{0}  {1}" -f $hash.Hash, (Split-Path $setupPath -Leaf)) -NoNewline
+Write-Host "Created $checksumPath"

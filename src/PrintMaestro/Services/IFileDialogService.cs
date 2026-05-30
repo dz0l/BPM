@@ -5,4 +5,6 @@ public interface IFileDialogService
     IReadOnlyList<string> OpenDocuments();
 
     IReadOnlyList<string> OpenFolder();
+
+    string? PickFolder();
 }

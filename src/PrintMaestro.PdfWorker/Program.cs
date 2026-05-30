@@ -1,2 +1,11 @@
-﻿// Placeholder worker entry point. IPC и печать PDF добавляются на этапе 4.
-Console.WriteLine("PrintMaestro.PdfWorker ready.");
+﻿using PrintMaestro.Core.IPC;
+using PrintMaestro.Infrastructure.Workers;
+
+await WorkerPipeHost.RunServerAsync(
+    WorkerPipeNames.Pdf,
+    (request, cancellationToken) =>
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(PdfPrintExecutor.Execute(request, cancellationToken));
+    },
+    CancellationToken.None);

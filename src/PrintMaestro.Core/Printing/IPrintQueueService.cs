@@ -21,4 +21,14 @@ public interface IPrintQueueService
     void ClearCompleted();
 
     void UpdateStatus(Guid jobId, PrintJobStatus status, int progressPercent = 0, string? errorMessage = null);
+
+    bool HasActiveJobs { get; }
+
+    void PauseJob(Guid jobId);
+
+    void ResumeJob(Guid jobId);
+
+    void RetryJob(Guid jobId);
+
+    void CancelJob(Guid jobId);
 }

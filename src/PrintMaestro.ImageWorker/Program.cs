@@ -1,2 +1,11 @@
-﻿// Placeholder worker entry point. SkiaSharp-печать добавляется на этапе 4.
-Console.WriteLine("PrintMaestro.ImageWorker ready.");
+﻿using PrintMaestro.Core.IPC;
+using PrintMaestro.Infrastructure.Workers;
+
+await WorkerPipeHost.RunServerAsync(
+    WorkerPipeNames.Image,
+    (request, cancellationToken) =>
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(ImagePrintExecutor.Execute(request, cancellationToken));
+    },
+    CancellationToken.None);

@@ -22,19 +22,27 @@ public sealed class FileDialogService : IFileDialogService
 
     public IReadOnlyList<string> OpenFolder()
     {
-        var dialog = new OpenFolderDialog
-        {
-            Multiselect = false
-        };
-
-        if (dialog.ShowDialog() != true || string.IsNullOrWhiteSpace(dialog.FolderName))
+        var folder = PickFolder();
+        if (string.IsNullOrWhiteSpace(folder))
         {
             return [];
         }
 
         return Directory
-            .EnumerateFiles(dialog.FolderName, "*.*", SearchOption.AllDirectories)
+            .EnumerateFiles(folder, "*.*", SearchOption.AllDirectories)
             .Where(SupportedFileTypes.IsSupported)
             .ToList();
+    }
+
+    public string? PickFolder()
+    {
+        var dialog = new OpenFolderDialog
+        {
+            Multiselect = false
+        };
+
+        return dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.FolderName)
+            ? dialog.FolderName
+            : null;
     }
 }

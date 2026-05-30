@@ -1,0 +1,36 @@
+Print Maestro — Third-Party Notices
+====================================
+
+This application uses the following open-source components.
+
+CommunityToolkit.Mvvm — MIT License
+https://github.com/CommunityToolkit/dotnet
+
+WPF-UI — MIT License
+https://github.com/lepoco/wpfui
+
+gong-wpf-dragdrop — BSD-3-Clause
+https://github.com/punker76/gong-wpf-dragdrop
+
+Microsoft.Extensions.Hosting / DependencyInjection / Http — MIT License
+https://github.com/dotnet/runtime
+
+Serilog / Serilog.Sinks.File / Serilog.Extensions.Hosting — Apache-2.0
+https://github.com/serilog/serilog
+
+Microsoft.Data.Sqlite — MIT License
+https://github.com/dotnet/efcore
+
+Docnet.Core — MIT License
+https://github.com/GowenGit/docnet
+
+PdfPig (UglyToad.PdfPig) — Apache-2.0
+https://github.com/UglyToad/PdfPig
+
+SkiaSharp — MIT License
+https://github.com/mono/SkiaSharp
+
+System.Drawing.Common — MIT License
+https://github.com/dotnet/winforms
+
+Full license texts are available in the respective project repositories.

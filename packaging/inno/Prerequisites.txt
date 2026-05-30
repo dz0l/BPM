@@ -1,0 +1,9 @@
+Print Maestro requires the .NET 10 Desktop Runtime (x64) for Windows.
+
+If the application does not start after installation, download and install the runtime from:
+
+https://dotnet.microsoft.com/download/dotnet/10.0
+
+Select "Run desktop apps" → Windows → x64.
+
+Microsoft Office is required for printing Word and Excel documents (.doc, .docx, .xls, .xlsx).

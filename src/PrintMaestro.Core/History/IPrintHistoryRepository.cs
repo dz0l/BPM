@@ -7,4 +7,6 @@ public interface IPrintHistoryRepository
     Task AddAsync(PrintHistoryEntry entry, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<PrintHistoryEntry>> GetRecentAsync(int limit, CancellationToken cancellationToken);
+
+    Task ClearAsync(CancellationToken cancellationToken);
 }

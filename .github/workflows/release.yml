@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -23,16 +24,16 @@ jobs:
       - name: Build and test
         run: |
           dotnet restore PrintMaestro.slnx
-          dotnet test PrintMaestro.slnx -c Release
+          dotnet test PrintMaestro.slnx -c Release --verbosity normal
 
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
 
-      - name: Publish portable ZIP and beta Setup.exe
+      - name: Build release packages
         shell: pwsh
-        run: ./scripts/publish-inno.ps1 -Configuration Release
+        run: ./scripts/build-release.ps1 -Configuration Release
 
-      - name: Publish MSIX
+      - name: Publish MSIX (optional)
         shell: pwsh
         continue-on-error: true
         run: ./scripts/publish-msix.ps1 -Configuration Release
@@ -42,6 +43,8 @@ jobs:
         with:
           files: |
             dist/PrintMaestro-*-Setup.exe
-            dist/PrintMaestro-*.zip
+            dist/PrintMaestro-*-Setup.exe.sha256
+            dist/PrintMaestro-*-win-x64.zip
+            dist/PrintMaestro-*-win-x64.zip.sha256
             dist/PrintMaestro-*.msix
           generate_release_notes: true

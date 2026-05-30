@@ -6,11 +6,17 @@ public sealed class PrintSettings
 
     public PaperFormat PaperFormat { get; set; } = PaperFormat.A4;
 
-    public PaperOrientation Orientation { get; set; } = PaperOrientation.Portrait;
+    public PaperOrientation Orientation { get; set; } = PaperOrientation.Auto;
 
     public int Copies { get; set; } = 1;
 
     public DuplexMode Duplex { get; set; } = DuplexMode.Simplex;
+
+    public bool AutoDetectLayout { get; set; } = false;
+
+    public bool FitToPage { get; set; } = true;
+
+    public bool InsertBlankPageAfter { get; set; }
 
     public PrintSettings Clone() => new()
     {
@@ -18,6 +24,9 @@ public sealed class PrintSettings
         PaperFormat = PaperFormat,
         Orientation = Orientation,
         Copies = Copies,
-        Duplex = Duplex
+        Duplex = Duplex,
+        AutoDetectLayout = AutoDetectLayout,
+        FitToPage = FitToPage,
+        InsertBlankPageAfter = InsertBlankPageAfter
     };
 }

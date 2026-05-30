@@ -1,12 +1,12 @@
-; Print Maestro — Inno Setup (beta channel)
+; Print Maestro — Inno Setup installer
 ; Compile: scripts/publish-inno.ps1
 
 #ifndef AppVersion
-  #define AppVersion "0.1.0"
+  #define AppVersion "1.0.0"
 #endif
 
 #ifndef PublishSource
-  #define PublishSource "..\..\dist\PrintMaestro-0.1.0"
+  #define PublishSource "..\..\dist\PrintMaestro-1.0.0"
 #endif
 
 #define MyAppName "Print Maestro"
@@ -35,6 +35,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequired=lowest
 UninstallDisplayIcon={app}\{#MyAppExe}
+InfoBeforeFile=Prerequisites.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

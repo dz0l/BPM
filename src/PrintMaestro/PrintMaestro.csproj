@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
@@ -27,6 +28,40 @@
     <Content Include="Assets\Localization\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\THIRD_PARTY_LICENSES.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
+
+  <Target Name="CopyWorkerOutputs" AfterTargets="Build">
+    <PropertyGroup>
+      <_WorkerConfiguration Condition="'$(Configuration)' == ''">Debug</_WorkerConfiguration>
+      <_WorkerConfiguration Condition="'$(Configuration)' != ''">$(Configuration)</_WorkerConfiguration>
+      <_WorkerTargetFramework>net10.0-windows10.0.17763.0</_WorkerTargetFramework>
+    </PropertyGroup>
+    <MSBuild Projects="..\PrintMaestro.PdfWorker\PrintMaestro.PdfWorker.csproj"
+             Targets="Build"
+             Properties="Configuration=$(_WorkerConfiguration)" />
+    <MSBuild Projects="..\PrintMaestro.ImageWorker\PrintMaestro.ImageWorker.csproj"
+             Targets="Build"
+             Properties="Configuration=$(_WorkerConfiguration)" />
+    <MSBuild Projects="..\PrintMaestro.OfficeWorker\PrintMaestro.OfficeWorker.csproj"
+             Targets="Build"
+             Properties="Configuration=$(_WorkerConfiguration)" />
+    <ItemGroup>
+      <_PdfWorkerFiles Include="..\PrintMaestro.PdfWorker\bin\$(_WorkerConfiguration)\$(_WorkerTargetFramework)\**\*.*" />
+      <_ImageWorkerFiles Include="..\PrintMaestro.ImageWorker\bin\$(_WorkerConfiguration)\$(_WorkerTargetFramework)\**\*.*" />
+      <_OfficeWorkerFiles Include="..\PrintMaestro.OfficeWorker\bin\$(_WorkerConfiguration)\$(_WorkerTargetFramework)\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PdfWorkerFiles)"
+          DestinationFolder="$(OutputPath)workers\pdf\%(RecursiveDir)"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_ImageWorkerFiles)"
+          DestinationFolder="$(OutputPath)workers\image\%(RecursiveDir)"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_OfficeWorkerFiles)"
+          DestinationFolder="$(OutputPath)workers\office\%(RecursiveDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

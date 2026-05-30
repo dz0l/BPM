@@ -3,7 +3,7 @@
 Desktop Windows app for **batch sequential printing** of PDF, Office, image, and text documents.
 
 > Repository: [github.com/dz0l/BPM](https://github.com/dz0l/BPM)  
-> Version: **0.1.0** (MVP scaffold)
+> Version: **1.0.0**
 
 ---
 
@@ -20,7 +20,7 @@ No commercial code signing is required for v1.0. Windows SmartScreen may show �
 
 ---
 
-## Features (v0.1)
+## Features (v1.0)
 
 - Print queue (up to 1000 files)
 - Add files and folders via dialog
@@ -31,16 +31,18 @@ No commercial code signing is required for v1.0. Windows SmartScreen may show �
 - Update check via GitHub Releases
 - Fluent Design UI (WPF-UI, Mica)
 
-Document printing and worker processes are **in development**.
+- Sequential batch printing for PDF, images, text, and Office documents (via worker processes)
+- Print history (last 100 jobs) and named print profiles
+- Settings: language, profile management, About / third-party licenses
 
 ---
 
-## Supported formats (target)
+## Supported formats
 
 | Category | Extensions |
 |----------|------------|
 | PDF | `.pdf` |
-| Microsoft Office | `.doc`, `.docx`, `.xls`, `.xlsx` (requires Office) |
+| Microsoft Office | `.doc`, `.docx`, `.xls`, `.xlsx` (requires Office; PowerPoint — позже) |
 | Text | `.txt` |
 | Images | `.png`, `.jpg`, `.jpeg`, `.bmp`, `.heic`, `.tiff`, `.webp` |
 
@@ -82,9 +84,17 @@ dotnet run --project src/PrintMaestro/PrintMaestro.csproj -c Release
 Build packages locally:
 
 ```powershell
-./scripts/publish-portable.ps1 -Configuration Release   # ZIP (alpha)
-./scripts/publish-inno.ps1 -Configuration Release       # ZIP + Setup.exe (beta)
+./scripts/build-release.ps1 -Configuration Release  # ZIP + Setup.exe + SHA256
+./scripts/publish-portable.ps1 -Configuration Release   # ZIP only
+./scripts/publish-inno.ps1 -Configuration Release       # ZIP + Setup.exe
 ./scripts/publish-msix.ps1 -Configuration Release       # MSIX (needs VS MSIX tooling)
+```
+
+Publish to GitHub Releases (creates assets automatically):
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ---

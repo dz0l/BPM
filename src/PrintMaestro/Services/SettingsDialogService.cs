@@ -9,13 +9,27 @@ public sealed class SettingsDialogService(IServiceProvider serviceProvider) : IS
 {
     public void ShowSettings(Window owner)
     {
-        var viewModel = ActivatorUtilities.CreateInstance<SettingsViewModel>(serviceProvider);
-        var window = new SettingsWindow(viewModel)
+        try
         {
-            Owner = owner
-        };
+            var viewModel = ActivatorUtilities.CreateInstance<SettingsViewModel>(serviceProvider);
+            viewModel.LoadProfiles();
 
-        viewModel.CloseRequested += (_, _) => window.Close();
-        window.ShowDialog();
+            var window = new SettingsWindow(viewModel)
+            {
+                Owner = owner
+            };
+
+            viewModel.CloseRequested += (_, _) => window.Close();
+            window.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Error(ex, "Failed to open settings window.");
+            System.Windows.MessageBox.Show(
+                ex.Message,
+                owner.Title,
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 }

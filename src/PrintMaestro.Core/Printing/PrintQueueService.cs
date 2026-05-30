@@ -123,4 +123,76 @@ public sealed class PrintQueueService : IPrintQueueService
         job.ErrorMessage = errorMessage;
         QueueChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public bool HasActiveJobs => _jobs.Any(j => j.Status is
+        PrintJobStatus.Preparing or
+        PrintJobStatus.Dispatching or
+        PrintJobStatus.Spooled or
+        PrintJobStatus.Printing or
+        PrintJobStatus.RetryWaiting);
+
+    public void PauseJob(Guid jobId)
+    {
+        var job = _jobs.FirstOrDefault(j => j.Id == jobId);
+        if (job is null)
+        {
+            return;
+        }
+
+        if (job.Status is PrintJobStatus.Pending or PrintJobStatus.Printing or PrintJobStatus.Preparing)
+        {
+            job.Status = PrintJobStatus.Paused;
+            QueueChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public void ResumeJob(Guid jobId)
+    {
+        var job = _jobs.FirstOrDefault(j => j.Id == jobId);
+        if (job is null)
+        {
+            return;
+        }
+
+        if (job.Status == PrintJobStatus.Paused)
+        {
+            job.Status = PrintJobStatus.Pending;
+            QueueChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public void RetryJob(Guid jobId)
+    {
+        var job = _jobs.FirstOrDefault(j => j.Id == jobId);
+        if (job is null)
+        {
+            return;
+        }
+
+        if (job.Status is PrintJobStatus.Failed or PrintJobStatus.Canceled)
+        {
+            job.Status = PrintJobStatus.Pending;
+            job.ErrorMessage = null;
+            job.ProgressPercent = 0;
+            QueueChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public void CancelJob(Guid jobId)
+    {
+        var job = _jobs.FirstOrDefault(j => j.Id == jobId);
+        if (job is null)
+        {
+            return;
+        }
+
+        if (job.Status is PrintJobStatus.Completed)
+        {
+            return;
+        }
+
+        job.Status = PrintJobStatus.Canceled;
+        job.ProgressPercent = 0;
+        QueueChanged?.Invoke(this, EventArgs.Empty);
+    }
 }
