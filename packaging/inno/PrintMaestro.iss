@@ -6,7 +6,7 @@
 #endif
 
 #ifndef PublishSource
-  #define PublishSource "..\..\dist\PrintMaestro-1.0.0"
+  #define PublishSource "..\..\dist\PrintMaestro-" + AppVersion
 #endif
 
 #define MyAppName "Print Maestro"

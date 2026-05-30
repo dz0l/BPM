@@ -52,14 +52,12 @@ Or:      choco install innosetup -y
 "@
 }
 
-$publishDirAbsolute = (Resolve-Path $publishDir).Path
-$publishSourceArg = "/DPublishSource=$publishDirAbsolute"
 $appVersionArg = "/DAppVersion=$version"
 
 Write-Host "Using ISCC: $iscc"
-Write-Host "Publish source: $publishDirAbsolute"
+Write-Host "Publish source: $(Join-Path $repoRoot $publishDir)"
 
-& $iscc $issPath $publishSourceArg $appVersionArg
+& $iscc $issPath $appVersionArg
 
 $setupPath = Join-Path $OutputRoot "PrintMaestro-$version-Setup.exe"
 if (-not (Test-Path $setupPath)) {
