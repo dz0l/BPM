@@ -19,10 +19,29 @@ if (-not (Test-Path $publishDir)) {
 
 $isccCandidates = @(
     "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-    "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+    "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
+    "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
 )
 
 $iscc = $isccCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+
+if (-not $iscc) {
+    $registryPaths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1"
+    )
+
+    foreach ($key in $registryPaths) {
+        $installDir = (Get-ItemProperty -Path $key -ErrorAction SilentlyContinue).InstallLocation
+        if ($installDir) {
+            $candidate = Join-Path $installDir.TrimEnd('\') "ISCC.exe"
+            if (Test-Path $candidate) {
+                $iscc = $candidate
+                break
+            }
+        }
+    }
+}
 
 if (-not $iscc) {
     throw @"
@@ -33,8 +52,12 @@ Or:      choco install innosetup -y
 "@
 }
 
-$publishSourceArg = "/DPublishSource=$publishDir"
+$publishDirAbsolute = (Resolve-Path $publishDir).Path
+$publishSourceArg = "/DPublishSource=$publishDirAbsolute"
 $appVersionArg = "/DAppVersion=$version"
+
+Write-Host "Using ISCC: $iscc"
+Write-Host "Publish source: $publishDirAbsolute"
 
 & $iscc $issPath $publishSourceArg $appVersionArg
 
