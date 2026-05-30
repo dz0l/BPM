@@ -12,7 +12,7 @@
 #define MyAppName "Print Maestro"
 #define MyAppExe "PrintMaestro.exe"
 #define MyAppPublisher "dz0l"
-#define MyAppURL "https://github.com/dz0l/PrintMaestro"
+#define MyAppURL "https://github.com/dz0l/BPM"
 
 [Setup]
 AppId={{A7B3C4D5-E6F7-4890-ABCD-EF1234567890}

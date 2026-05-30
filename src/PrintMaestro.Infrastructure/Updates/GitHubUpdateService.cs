@@ -7,7 +7,7 @@ namespace PrintMaestro.Infrastructure.Updates;
 
 public sealed class GitHubUpdateService(HttpClient httpClient) : IUpdateService
 {
-    public const string DefaultRepository = "dz0l/PrintMaestro";
+    public const string DefaultRepository = "dz0l/BPM";
 
     public async Task<UpdateInfo?> CheckForUpdateAsync(CancellationToken cancellationToken)
     {
@@ -28,11 +28,11 @@ public sealed class GitHubUpdateService(HttpClient httpClient) : IUpdateService
         }
 
         var asset = response.Assets.FirstOrDefault(a =>
-                         a.Name.EndsWith(".msix", StringComparison.OrdinalIgnoreCase))
-                     ?? response.Assets.FirstOrDefault(a =>
                          a.Name.Contains("-Setup.exe", StringComparison.OrdinalIgnoreCase))
                      ?? response.Assets.FirstOrDefault(a =>
-                         a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
+                         a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                     ?? response.Assets.FirstOrDefault(a =>
+                         a.Name.EndsWith(".msix", StringComparison.OrdinalIgnoreCase));
 
         if (asset?.BrowserDownloadUrl is null)
         {

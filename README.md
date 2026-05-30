@@ -2,7 +2,7 @@
 
 Desktop Windows app for **batch sequential printing** of PDF, Office, image, and text documents.
 
-> Repository: [github.com/dz0l/PrintMaestro](https://github.com/dz0l/PrintMaestro)  
+> Repository: [github.com/dz0l/BPM](https://github.com/dz0l/BPM)  
 > Version: **0.1.0** (MVP scaffold)
 
 ---
@@ -11,11 +11,12 @@ Desktop Windows app for **batch sequential printing** of PDF, Office, image, and
 
 | Channel | Format | Audience |
 |---------|--------|----------|
-| **Alpha** | Portable **ZIP** | developers, quick local checks |
-| **Beta** | **Inno Setup** `Setup.exe` | testers from GitHub Releases |
-| **Production** | Signed **MSIX** | general users (Windows 11 App Installer) |
+| **Alpha** | Portable **ZIP** | developers, quick checks |
+| **Public release (v1.0)** | **Inno Setup** `Setup.exe` | recommended for all users from GitHub |
+| **Fallback** | ZIP | no install wizard |
+| **MSIX** | optional | internal QA only (unsigned/self-signed) |
 
-ClickOnce is **not** used.
+No commercial code signing is required for v1.0. Windows SmartScreen may show “Unknown publisher” — choose **Run anyway**. ClickOnce is **not** used.
 
 ---
 
@@ -56,29 +57,24 @@ Document printing and worker processes are **in development**.
 
 ## Installation
 
-### Beta — Setup.exe (recommended for testers)
+### Recommended — Setup.exe
 
-1. Download `PrintMaestro-x.x.x-Setup.exe` from [Releases](https://github.com/dz0l/PrintMaestro/releases).
-2. Run the installer (SmartScreen may show “Unknown publisher” — choose **Run anyway**).
-3. Launch **Print Maestro** from the Start menu.
+1. Download `PrintMaestro-x.x.x-Setup.exe` from [Releases](https://github.com/dz0l/BPM/releases).
+2. If SmartScreen warns about an unknown publisher, click **Run anyway** / **More info** → **Run anyway**.
+3. Complete the installer; launch **Print Maestro** from the Start menu.
 
-Requires .NET 10 Desktop Runtime if not already installed.
+Requires [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) if not already installed.
 
-### Alpha — Portable ZIP
+### Portable ZIP
 
 1. Download `PrintMaestro-x.x.x-win-x64.zip` from Releases.
 2. Extract anywhere and run `PrintMaestro.exe`.
 
-### Production — MSIX (when signed builds are published)
-
-1. Download `PrintMaestro-x.x.x-x64.msix` from Releases.
-2. Double-click — Windows App Installer installs in one step.
-
 ### Build from source
 
 ```powershell
-git clone https://github.com/dz0l/PrintMaestro.git
-cd PrintMaestro
+git clone https://github.com/dz0l/BPM.git
+cd BPM
 dotnet build PrintMaestro.slnx -c Release
 dotnet run --project src/PrintMaestro/PrintMaestro.csproj -c Release
 ```
@@ -97,8 +93,8 @@ Build packages locally:
 
 The app is **offline-first**; network is used for updates only.
 
-- On startup, GitHub Releases API is queried (`dz0l/PrintMaestro`).
-- Update asset priority: **MSIX** → **Setup.exe** → **ZIP**.
+- On startup, GitHub Releases API is queried (`dz0l/BPM`).
+- Update asset priority: **Setup.exe** → **ZIP** → MSIX (if present).
 - Disable: `%AppData%\PrintMaestro\settings.json` → `"checkUpdatesOnStartup": false`.
 
 ---
@@ -132,4 +128,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## Feedback
 
-[github.com/dz0l/PrintMaestro/issues](https://github.com/dz0l/PrintMaestro/issues)
+[github.com/dz0l/BPM/issues](https://github.com/dz0l/BPM/issues)
