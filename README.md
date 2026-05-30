@@ -3,20 +3,7 @@
 Desktop Windows app for **batch sequential printing** of PDF, Office, image, and text documents.
 
 > Repository: [github.com/dz0l/BPM](https://github.com/dz0l/BPM)  
-> Version: **1.0.0**
-
----
-
-## Distribution channels
-
-| Channel | Format | Audience |
-|---------|--------|----------|
-| **Alpha** | Portable **ZIP** | developers, quick checks |
-| **Public release (v1.0)** | **Inno Setup** `Setup.exe` | recommended for all users from GitHub |
-| **Fallback** | ZIP | no install wizard |
-| **MSIX** | optional | internal QA only (unsigned/self-signed) |
-
-No commercial code signing is required for v1.0. Windows SmartScreen may show “Unknown publisher” — choose **Run anyway**. ClickOnce is **not** used.
+> Version: **1.0.2**
 
 ---
 

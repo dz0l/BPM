@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PrintMaestro.Core;
 using PrintMaestro.Core.Configuration;
 using PrintMaestro.Core.Models;
 using PrintMaestro.Services;
@@ -21,7 +21,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _settingsStore = settingsStore;
         AvailableCultures = _localization.SupportedCultures.ToList();
         SelectedCulture = _localization.CurrentCulture;
-        AppVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.1.0";
+        AppVersion = AppVersionInfo.CurrentDisplay;
     }
 
     public IReadOnlyList<string> AvailableCultures { get; }

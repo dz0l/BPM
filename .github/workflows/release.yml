@@ -31,6 +31,15 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Verify version matches tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}" -replace '^v',''
+          $version = (Select-Xml -Path Directory.Build.props -XPath "//Version").Node.InnerText
+          if ($tag -ne $version) {
+            throw "Tag v$tag does not match Directory.Build.props Version $version"
+          }
+
       - name: Build and test
         run: |
           dotnet restore PrintMaestro.slnx

@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
-using System.Reflection;
 using System.Text.Json.Serialization;
+using PrintMaestro.Core;
 using PrintMaestro.Core.Updates;
 
 namespace PrintMaestro.Infrastructure.Updates;
@@ -11,7 +11,7 @@ public sealed class GitHubUpdateService(HttpClient httpClient) : IUpdateService
 
     public async Task<UpdateInfo?> CheckForUpdateAsync(CancellationToken cancellationToken)
     {
-        var currentVersion = Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(0, 1, 0);
+        var currentVersion = AppVersionInfo.Current;
         var response = await httpClient.GetFromJsonAsync<GitHubRelease>(
             $"https://api.github.com/repos/{DefaultRepository}/releases/latest",
             cancellationToken);
@@ -30,7 +30,7 @@ public sealed class GitHubUpdateService(HttpClient httpClient) : IUpdateService
         var asset = response.Assets.FirstOrDefault(a =>
                          a.Name.Contains("-Setup.exe", StringComparison.OrdinalIgnoreCase))
                      ?? response.Assets.FirstOrDefault(a =>
-                         a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                         a.Name.Contains("-win-x64.zip", StringComparison.OrdinalIgnoreCase))
                      ?? response.Assets.FirstOrDefault(a =>
                          a.Name.EndsWith(".msix", StringComparison.OrdinalIgnoreCase));
 
