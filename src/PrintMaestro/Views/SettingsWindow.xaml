@@ -1,0 +1,39 @@
+<ui:FluentWindow x:Class="PrintMaestro.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="{DynamicResource Settings.AppTitle}"
+        Width="420"
+        Height="240"
+        MinWidth="380"
+        MinHeight="220"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar x:Name="SettingsTitleBar"
+                     Grid.Row="0"
+                     Title="{DynamicResource Settings.AppTitle}"
+                     ShowMaximize="False"
+                     ShowMinimize="False"
+                     ShowClose="True" />
+
+        <StackPanel Grid.Row="1" Margin="24,16,24,24">
+            <TextBlock Text="{DynamicResource Settings.Language}"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,8" />
+            <ComboBox ItemsSource="{Binding AvailableCultures}"
+                      SelectedItem="{Binding SelectedCulture}"
+                      Margin="0,0,0,24" />
+            <ui:Button Content="{DynamicResource Button.Close}"
+                       HorizontalAlignment="Right"
+                       Command="{Binding CloseCommand}" />
+        </StackPanel>
+    </Grid>
+</ui:FluentWindow>

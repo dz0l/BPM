@@ -1,0 +1,10 @@
+.local
+*.local.md
+.vs/
+bin/
+obj/
+dist/
+*.user
+*.suo
+TestResults/
+*.log

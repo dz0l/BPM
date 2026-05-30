@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PrintMaestro.Core/PrintMaestro.Core.csproj" />
+    <Project Path="src/PrintMaestro.ImageWorker/PrintMaestro.ImageWorker.csproj" />
+    <Project Path="src/PrintMaestro.Infrastructure/PrintMaestro.Infrastructure.csproj" />
+    <Project Path="src/PrintMaestro.OfficeWorker/PrintMaestro.OfficeWorker.csproj" />
+    <Project Path="src/PrintMaestro.PdfWorker/PrintMaestro.PdfWorker.csproj" />
+    <Project Path="src/PrintMaestro/PrintMaestro.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PrintMaestro.Core.Tests/PrintMaestro.Core.Tests.csproj" />
+  </Folder>
+</Solution>
