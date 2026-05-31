@@ -28,7 +28,8 @@ internal static class OfficePrinterResolver
         }
 
         var resolved = ProbeWithWord(desiredPrinterName)
-            ?? ProbeWithExcel(desiredPrinterName);
+            ?? ProbeWithExcel(desiredPrinterName)
+            ?? ProbeWithPowerPoint(desiredPrinterName);
 
         lock (CacheLock)
         {
@@ -88,16 +89,109 @@ internal static class OfficePrinterResolver
         return null;
     }
 
+    public static string? TryResolveInstalledPrinterName(string desiredPrinterName)
+    {
+        if (string.IsNullOrWhiteSpace(desiredPrinterName))
+        {
+            return null;
+        }
+
+        foreach (string installed in PrinterSettings.InstalledPrinters)
+        {
+            if (MatchesPrinter(installed, desiredPrinterName))
+            {
+                return installed;
+            }
+        }
+
+        return null;
+    }
+
+    public static bool TryApplyPowerPointPrintOptions(dynamic printOptions, string installedPrinterName)
+    {
+        if (string.IsNullOrWhiteSpace(installedPrinterName))
+        {
+            return false;
+        }
+
+        try
+        {
+            printOptions.ActivePrinter = installedPrinterName;
+            var resolved = (string)printOptions.ActivePrinter;
+            return !string.IsNullOrWhiteSpace(resolved)
+                && MatchesPrinter(resolved, installedPrinterName);
+        }
+        catch (Exception ex) when (IsComRelated(ex))
+        {
+            return false;
+        }
+    }
+
+    public static string? TryApplyPrintOptionsActivePrinter(dynamic printOptions, string desiredPrinterName)
+    {
+        if (string.IsNullOrWhiteSpace(desiredPrinterName))
+        {
+            return null;
+        }
+
+        foreach (string installed in PrinterSettings.InstalledPrinters)
+        {
+            if (!MatchesPrinter(installed, desiredPrinterName))
+            {
+                continue;
+            }
+
+            foreach (var candidate in BuildPrinterCandidates(installed))
+            {
+                if (!TrySetActivePrinterOption(printOptions, candidate, out string resolved)
+                    || string.IsNullOrWhiteSpace(resolved)
+                    || !MatchesPrinter(resolved, desiredPrinterName))
+                {
+                    continue;
+                }
+
+                return resolved;
+            }
+        }
+
+        if (TrySetActivePrinterOption(printOptions, desiredPrinterName, out string direct)
+            && !string.IsNullOrWhiteSpace(direct)
+            && MatchesPrinter(direct, desiredPrinterName))
+        {
+            return direct;
+        }
+
+        return null;
+    }
+
     public static bool TrySetActivePrinterOption(dynamic printOptions, string printerName)
     {
+        return TrySetActivePrinterOption(printOptions, printerName, out string _);
+    }
+
+    private static bool TrySetActivePrinterOption(dynamic printOptions, string printerName, out string resolved)
+    {
+        resolved = string.Empty;
+
         try
         {
             printOptions.ActivePrinter = printerName;
+            resolved = (string)printOptions.ActivePrinter;
             return true;
         }
         catch (Exception ex) when (IsComRelated(ex))
         {
             return false;
+        }
+    }
+
+    private static IEnumerable<string> BuildPrinterCandidates(string installedPrinterName)
+    {
+        yield return installedPrinterName;
+
+        for (var port = 0; port <= 15; port++)
+        {
+            yield return $"{installedPrinterName} on Ne{port:D2}:";
         }
     }
 
@@ -145,6 +239,74 @@ internal static class OfficePrinterResolver
                 try
                 {
                     app.Quit(SaveChanges: false);
+                }
+                catch
+                {
+                    // Ignore quit errors.
+                }
+
+                try
+                {
+                    Marshal.ReleaseComObject(app);
+                }
+                catch
+                {
+                    // Ignore release errors.
+                }
+            }
+        }
+    }
+
+    private static string? ProbeWithPowerPoint(string desiredPrinterName)
+    {
+        var powerPointType = Type.GetTypeFromProgID("PowerPoint.Application");
+        if (powerPointType is null)
+        {
+            return null;
+        }
+
+        dynamic? app = null;
+        dynamic? presentation = null;
+
+        try
+        {
+            app = Activator.CreateInstance(powerPointType)!;
+            app.Visible = -1;
+            presentation = app.Presentations.Add(-1);
+            return TryApplyPrintOptionsActivePrinter(presentation.PrintOptions, desiredPrinterName);
+        }
+        catch (Exception ex) when (IsComRelated(ex))
+        {
+            return null;
+        }
+        finally
+        {
+            if (presentation is not null)
+            {
+                try
+                {
+                    presentation.Close();
+                }
+                catch
+                {
+                    // Ignore close errors.
+                }
+
+                try
+                {
+                    Marshal.ReleaseComObject(presentation);
+                }
+                catch
+                {
+                    // Ignore release errors.
+                }
+            }
+
+            if (app is not null)
+            {
+                try
+                {
+                    app.Quit();
                 }
                 catch
                 {

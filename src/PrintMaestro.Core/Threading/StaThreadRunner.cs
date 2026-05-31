@@ -2,7 +2,7 @@ namespace PrintMaestro.Core.Threading;
 
 public static class StaThreadRunner
 {
-    public static T Run<T>(Func<T> func, CancellationToken cancellationToken = default)
+    public static T Run<T>(Func<T> func, CancellationToken cancellationToken = default, bool useBackgroundThread = true)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -31,7 +31,7 @@ public static class StaThreadRunner
             }
         })
         {
-            IsBackground = true
+            IsBackground = useBackgroundThread
         };
 
         thread.SetApartmentState(ApartmentState.STA);
@@ -50,10 +50,10 @@ public static class StaThreadRunner
         return result!;
     }
 
-    public static void Run(Action action, CancellationToken cancellationToken = default) =>
+    public static void Run(Action action, CancellationToken cancellationToken = default, bool useBackgroundThread = true) =>
         Run<object?>(() =>
         {
             action();
             return null;
-        }, cancellationToken);
+        }, cancellationToken, useBackgroundThread);
 }

@@ -9,6 +9,7 @@ public static class SupportedFileTypes
         ".pdf",
         ".doc", ".docx",
         ".xls", ".xlsx",
+        ".ppt", ".pptx",
         ".txt",
         ".png", ".jpg", ".jpeg", ".bmp", ".heic", ".tiff", ".webp"
     };
@@ -17,5 +18,5 @@ public static class SupportedFileTypes
         Extensions.Contains(Path.GetExtension(filePath));
 
     public static string FilterDescription =>
-        "Документы|*.pdf;*.doc;*.docx;*.xls;*.xlsx;*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.heic;*.tiff;*.webp|Все файлы|*.*";
+        "Документы|*.pdf;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.png;*.jpg;*.jpeg;*.bmp;*.heic;*.tiff;*.webp|Все файлы|*.*";
 }

@@ -20,6 +20,15 @@ public static class OfficePrintExecutor
     private const int ExcelPaperA3 = 8;
     private const int ExcelPaperA4 = 9;
 
+    private const int PowerPointVisibleTrue = -1;
+    private const int PowerPointMsoTrue = -1;
+    private const int PowerPointMsoFalse = 0;
+    private const int PowerPointPrintInBackgroundFalse = 0;
+    private const int PowerPointDisplayAlertsNone = 1;
+    private const int PowerPointPrintAll = 1;
+    private const int PowerPointSpoolerWaitMs = 5000;
+    private const int PowerPointDefaultPrinterSettleMs = 300;
+
     public static WorkerResponse Execute(WorkerMessage message, CancellationToken cancellationToken)
     {
         OfficeProcessTracker.CleanupOrphanFromPreviousSession();
@@ -37,7 +46,8 @@ public static class OfficePrintExecutor
         {
             return StaThreadRunner.Run(
                 () => ExecuteCore(message, pid => trackedPid = pid),
-                CancellationToken.None);
+                CancellationToken.None,
+                useBackgroundThread: false);
         }
         catch (OperationCanceledException)
         {
@@ -60,6 +70,7 @@ public static class OfficePrintExecutor
             {
                 ".doc" or ".docx" => PrintWord(message, trackProcessId),
                 ".xls" or ".xlsx" => PrintExcel(message, trackProcessId),
+                ".ppt" or ".pptx" => PrintPowerPoint(message, trackProcessId),
                 _ => WorkerResponse.Fail("UNSUPPORTED_OFFICE", "Unsupported Office format.", retryable: false)
             };
         }
@@ -235,6 +246,121 @@ public static class OfficePrintExecutor
 
             OfficeProcessTracker.ClearTracking();
         }
+    }
+
+    private static WorkerResponse PrintPowerPoint(WorkerMessage message, Action<int> trackProcessId)
+    {
+        var powerPointType = Type.GetTypeFromProgID("PowerPoint.Application");
+        if (powerPointType is null)
+        {
+            return WorkerResponse.Fail(
+                "OFFICE_NOT_INSTALLED",
+                "Microsoft PowerPoint is not installed.",
+                retryable: false);
+        }
+
+        var filePath = Path.GetFullPath(message.FilePath);
+        var installedPrinter = OfficePrinterResolver.TryResolveInstalledPrinterName(message.Settings.PrinterName)
+            ?? message.Settings.PrinterName;
+        dynamic? app = null;
+        dynamic? presentation = null;
+        WindowsDefaultPrinterScope? defaultPrinterScope = null;
+
+        try
+        {
+            defaultPrinterScope = WindowsDefaultPrinterScope.TryCreate(installedPrinter);
+            if (!string.IsNullOrWhiteSpace(installedPrinter))
+            {
+                Thread.Sleep(PowerPointDefaultPrinterSettleMs);
+            }
+
+            app = Activator.CreateInstance(powerPointType)!;
+            app.Visible = PowerPointVisibleTrue;
+            TrySetPowerPointDisplayAlertsNone(app);
+
+            TrackOfficeProcess(app, trackProcessId);
+
+            presentation = app.Presentations.Open(
+                filePath,
+                PowerPointMsoTrue,
+                PowerPointMsoTrue,
+                PowerPointMsoFalse);
+
+            dynamic printOptions = presentation.PrintOptions;
+            printOptions.PrintInBackground = PowerPointPrintInBackgroundFalse;
+            printOptions.RangeType = PowerPointPrintAll;
+
+            if (!string.IsNullOrWhiteSpace(installedPrinter))
+            {
+                OfficePrinterResolver.TryApplyPowerPointPrintOptions(printOptions, installedPrinter);
+            }
+
+            var copies = (int)Math.Clamp(message.Settings.Copies, 1, short.MaxValue);
+            if (copies > 1)
+            {
+                printOptions.NumberOfCopies = copies;
+            }
+
+            presentation.PrintOut();
+
+            WaitForPowerPointSpooler();
+
+            return WorkerResponse.Ok();
+        }
+        catch (COMException ex)
+        {
+            return WorkerResponse.Fail("OFFICE_PRINT_FAILED", ex.Message, retryable: false);
+        }
+        finally
+        {
+            if (presentation is not null)
+            {
+                try
+                {
+                    presentation.Close();
+                }
+                catch
+                {
+                    // Ignore close errors after kill/cancel.
+                }
+
+                Marshal.ReleaseComObject(presentation);
+            }
+
+            if (app is not null)
+            {
+                try
+                {
+                    app.Quit();
+                }
+                catch
+                {
+                    // Ignore quit errors after kill/cancel.
+                }
+
+                Marshal.ReleaseComObject(app);
+            }
+
+            defaultPrinterScope?.Dispose();
+            OfficeProcessTracker.ClearTracking();
+        }
+    }
+
+    private static void TrySetPowerPointDisplayAlertsNone(dynamic app)
+    {
+        try
+        {
+            app.DisplayAlerts = PowerPointDisplayAlertsNone;
+        }
+        catch
+        {
+            // Best effort: suppress printer error dialogs during automation.
+        }
+    }
+
+    private static void WaitForPowerPointSpooler()
+    {
+        Thread.Sleep(PowerPointSpoolerWaitMs);
     }
 
     private static void TrackOfficeProcess(dynamic app, Action<int> trackProcessId)

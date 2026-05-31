@@ -2,9 +2,6 @@
 
 Desktop Windows app for **batch sequential printing** of PDF, Office, image, and text documents.
 
-> Repository: [github.com/dz0l/BPM](https://github.com/dz0l/BPM)  
-> Version: **1.0.2**
-
 ---
 
 ## Features (v1.0)
@@ -17,7 +14,6 @@ Desktop Windows app for **batch sequential printing** of PDF, Office, image, and
 - Settings and history in `%AppData%\PrintMaestro\`
 - Update check via GitHub Releases
 - Fluent Design UI (WPF-UI, Mica)
-
 - Sequential batch printing for PDF, images, text, and Office documents (via worker processes)
 - Print history (last 100 jobs) and named print profiles
 - Settings: language, profile management, About / third-party licenses
@@ -26,12 +22,14 @@ Desktop Windows app for **batch sequential printing** of PDF, Office, image, and
 
 ## Supported formats
 
-| Category | Extensions |
-|----------|------------|
-| PDF | `.pdf` |
-| Microsoft Office | `.doc`, `.docx`, `.xls`, `.xlsx` (requires Office; PowerPoint planned later) |
-| Text | `.txt` |
-| Images | `.png`, `.jpg`, `.jpeg`, `.bmp`, `.heic`, `.tiff`, `.webp` |
+
+| Category         | Extensions                                                                   |
+| ---------------- | ---------------------------------------------------------------------------- |
+| PDF              | `.pdf`                                                                       |
+| Microsoft Office | `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx` (requires Office) |
+| Text             | `.txt`                                                                       |
+| Images           | `.png`, `.jpg`, `.jpeg`, `.bmp`, `.heic`, `.tiff`, `.webp`                   |
+
 
 ---
 
@@ -85,12 +83,14 @@ Locale is auto-detected from Windows UI language on first launch.
 
 ## Data locations
 
-| Path | Purpose |
-|------|---------|
-| `%AppData%\PrintMaestro\settings.json` | Settings (incl. locale) |
-| `%AppData%\PrintMaestro\history.db` | Print history (100 entries) |
-| `%AppData%\PrintMaestro\logs\` | Logs |
-| `%AppData%\PrintMaestro\thumbnails\` | Thumbnail cache |
+
+| Path                                   | Purpose                     |
+| -------------------------------------- | --------------------------- |
+| `%AppData%\PrintMaestro\settings.json` | Settings (incl. locale)     |
+| `%AppData%\PrintMaestro\history.db`    | Print history (100 entries) |
+| `%AppData%\PrintMaestro\logs\`         | Logs                        |
+| `%AppData%\PrintMaestro\thumbnails\`   | Thumbnail cache             |
+
 
 ---
 
