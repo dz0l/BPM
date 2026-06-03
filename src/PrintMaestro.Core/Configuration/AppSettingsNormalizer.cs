@@ -12,6 +12,8 @@ public static class AppSettingsNormalizer
             profile.Settings ??= new Models.PrintSettings();
         }
 
+        settings.PdfRenderDpi = PdfRenderDpiOptions.Clamp(settings.PdfRenderDpi);
+
         return settings;
     }
 }

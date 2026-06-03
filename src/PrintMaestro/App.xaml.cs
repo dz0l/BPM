@@ -46,6 +46,8 @@ public partial class App : Application
                 services.AddSingleton<IDialogService, DialogService>();
                 services.AddSingleton<IThumbnailService, ThumbnailService>();
                 services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<ICurrentPrintSettingsSource>(sp =>
+                    sp.GetRequiredService<MainWindowViewModel>());
                 services.AddSingleton<MainWindow>();
             })
             .Build();

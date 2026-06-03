@@ -36,7 +36,21 @@
                                FontWeight="SemiBold"
                                Margin="0,0,0,8" />
                     <ComboBox ItemsSource="{Binding AvailableCultures}"
-                              SelectedItem="{Binding SelectedCulture}" />
+                              SelectedItem="{Binding SelectedCulture}"
+                              Margin="0,0,0,20" />
+
+                    <TextBlock Text="{DynamicResource Settings.PdfRenderDpi}"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,4" />
+                    <ui:NumberBox Value="{Binding PdfRenderDpi}"
+                                  Minimum="150"
+                                  Maximum="400"
+                                  SpinButtonPlacementMode="Compact"
+                                  Margin="0,0,0,8" />
+                    <TextBlock Text="{DynamicResource Settings.PdfRenderDpiHint}"
+                               TextWrapping="Wrap"
+                               Opacity="0.75"
+                               FontSize="12" />
                 </StackPanel>
             </TabItem>
 
@@ -45,14 +59,22 @@
                     <TextBlock Text="{DynamicResource Settings.Tab.Profiles}" />
                 </TabItem.Header>
                 <DockPanel Margin="8">
-                    <StackPanel DockPanel.Dock="Bottom"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Margin="0,12,0,0">
-                        <ui:Button Content="{DynamicResource Profiles.Delete}"
+                    <Grid DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:Button Grid.Column="0"
+                                   Content="{DynamicResource Profiles.SaveCurrent}"
+                                   Appearance="Primary"
+                                   Command="{Binding SaveProfileCommand}"
+                                   Margin="0,0,8,0"
+                                   HorizontalAlignment="Stretch" />
+                        <ui:Button Grid.Column="1"
+                                   Content="{DynamicResource Profiles.Delete}"
                                    Appearance="Secondary"
                                    Command="{Binding DeleteProfileCommand}" />
-                    </StackPanel>
+                    </Grid>
                     <TextBlock DockPanel.Dock="Top"
                                Text="{DynamicResource Profiles.ManageHint}"
                                TextWrapping="Wrap"

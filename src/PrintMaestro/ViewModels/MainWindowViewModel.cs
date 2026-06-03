@@ -12,7 +12,7 @@ using PrintMaestro.Services;
 
 namespace PrintMaestro.ViewModels;
 
-public sealed partial class MainWindowViewModel : ObservableObject, IDropTarget
+public sealed partial class MainWindowViewModel : ObservableObject, IDropTarget, ICurrentPrintSettingsSource
 {
     private readonly IPrintQueueService _queueService;
     private readonly IPrintDispatcher _printDispatcher;
@@ -241,7 +241,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDropTarget
         if (System.Windows.Application.Current.MainWindow is System.Windows.Window owner)
         {
             _settingsDialogService.ShowSettings(owner);
-            _ = ReloadPrintProfilesAsync();
+            _ = RefreshPrintProfilesAsync();
         }
     }
 
@@ -254,38 +254,12 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDropTarget
         }
     }
 
-    [RelayCommand]
-    private async Task SavePrintProfileAsync()
+    public PrintSettings CaptureCurrentPrintSettings() => CreateCurrentSettings();
+
+    public async Task RefreshPrintProfilesAsync()
     {
-        if (System.Windows.Application.Current.MainWindow is not System.Windows.Window owner)
-        {
-            return;
-        }
-
-        var name = _dialogService.Prompt(
-            owner,
-            _localization.GetString("Profiles.SaveTitle"),
-            _localization.GetString("Profiles.SavePrompt"));
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return;
-        }
-
         var settings = await _settingsStore.LoadAsync(CancellationToken.None);
-        settings.PrintProfiles.RemoveAll(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        settings.PrintProfiles.Add(new PrintProfile
-        {
-            Name = name.Trim(),
-            Settings = CreateCurrentSettings().Clone()
-        });
-        await _settingsStore.SaveAsync(settings, CancellationToken.None);
-        await ReloadPrintProfilesAsync();
-
-        SelectedPrintProfile = PrintProfiles.FirstOrDefault(p =>
-            p.Name.Equals(name.Trim(), StringComparison.OrdinalIgnoreCase));
-
-        _notificationService.ShowSuccess(_localization.GetString("Profiles.Saved", name.Trim()));
+        await LoadPrintProfilesAsync(settings, CancellationToken.None);
     }
 
     private async Task LoadPrintProfilesAsync(AppSettings settings, CancellationToken cancellationToken)
@@ -298,12 +272,6 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDropTarget
         }
 
         await Task.CompletedTask;
-    }
-
-    private async Task ReloadPrintProfilesAsync()
-    {
-        var settings = await _settingsStore.LoadAsync(CancellationToken.None);
-        await LoadPrintProfilesAsync(settings, CancellationToken.None);
     }
 
     private void ApplyPrintSettings(PrintSettings settings)

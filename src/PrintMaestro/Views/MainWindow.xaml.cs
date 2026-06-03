@@ -10,14 +10,17 @@ public partial class MainWindow : FluentWindow
 {
     private readonly IDialogService _dialogService;
     private readonly INotificationService _notificationService;
+    private readonly ILocalizationService _localization;
 
     public MainWindow(
         MainWindowViewModel viewModel,
         IDialogService dialogService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        ILocalizationService localization)
     {
         _dialogService = dialogService;
         _notificationService = notificationService;
+        _localization = localization;
 
         InitializeComponent();
         DataContext = viewModel;
@@ -25,6 +28,7 @@ public partial class MainWindow : FluentWindow
         Loaded += OnLoadedAsync;
         Closing += OnClosing;
         StateChanged += OnWindowStateChanged;
+        _localization.CultureChanged += OnCultureChanged;
 
         AllowDrop = true;
         AddHandler(DragDrop.PreviewDragOverEvent, new DragEventHandler(OnPreviewDragOver), true);
@@ -48,6 +52,9 @@ public partial class MainWindow : FluentWindow
 
     private void OnWindowStateChanged(object? sender, EventArgs e) => UpdateMaximizeButtonIcon();
 
+    private void OnCultureChanged(object? sender, EventArgs e) =>
+        Dispatcher.BeginInvoke(UpdateMaximizeButtonIcon);
+
     private void UpdateMaximizeButtonIcon()
     {
         if (MaximizeWindowButton is null)
@@ -63,8 +70,8 @@ public partial class MainWindow : FluentWindow
         };
 
         MaximizeWindowButton.ToolTip = WindowState == WindowState.Maximized
-            ? FindResource("Window.Restore")
-            : FindResource("Window.Maximize");
+            ? _localization.GetString("Window.Restore")
+            : _localization.GetString("Window.Maximize");
     }
 
     private void OnMinimizeWindowClick(object sender, RoutedEventArgs e) =>

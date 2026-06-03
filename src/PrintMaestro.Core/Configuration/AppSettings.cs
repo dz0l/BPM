@@ -11,6 +11,11 @@ public sealed class AppSettings
 
     public bool CheckUpdatesOnStartup { get; set; } = true;
 
+    /// <summary>
+    /// Rasterization DPI for PDF printing (Docnet). Higher = sharper text, larger spool jobs.
+    /// </summary>
+    public int PdfRenderDpi { get; set; } = PdfRenderDpiOptions.Default;
+
     public int MaxConcurrentJobs { get; set; } = 1;
 
     public PrintErrorPolicy OnPrintError { get; set; } = PrintErrorPolicy.Retry;

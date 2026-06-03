@@ -45,7 +45,6 @@
                                Click="OnMinimizeWindowClick" />
                     <ui:Button x:Name="MaximizeWindowButton"
                                Appearance="Transparent"
-                               ToolTip="{DynamicResource Window.Maximize}"
                                Icon="{ui:SymbolIcon Symbol=Maximize24}"
                                Click="OnMaximizeWindowClick" />
                     <ui:Button Appearance="Transparent"
@@ -225,12 +224,7 @@
                         <ComboBox ItemsSource="{Binding PrintProfiles}"
                                   SelectedItem="{Binding SelectedPrintProfile}"
                                   DisplayMemberPath="Name"
-                                  Margin="0,0,0,8" />
-                        <ui:Button Content="{DynamicResource Profiles.SaveCurrent}"
-                                   Appearance="Secondary"
-                                   Command="{Binding SavePrintProfileCommand}"
-                                   Margin="0,0,0,16"
-                                   HorizontalAlignment="Stretch" />
+                                  Margin="0,0,0,16" />
 
                         <TextBlock Text="{DynamicResource Settings.Printer}" Margin="0,0,0,4" />
                         <ComboBox ItemsSource="{Binding Printers}"
@@ -293,6 +287,7 @@
         <ui:SnackbarPresenter x:Name="SnackbarPresenter"
                               Grid.Row="1"
                               Panel.ZIndex="1000"
+                              IsHitTestVisible="False"
                               VerticalAlignment="Bottom"
                               HorizontalAlignment="Right"
                               Margin="24" />

@@ -1,3 +1,4 @@
+using PrintMaestro.Core.Configuration;
 using PrintMaestro.Core.Models;
 
 namespace PrintMaestro.Core.IPC;
@@ -11,4 +12,6 @@ public sealed class WorkerMessage
     public string FilePath { get; init; } = string.Empty;
 
     public PrintSettings Settings { get; init; } = new();
+
+    public int PdfRenderDpi { get; init; } = PdfRenderDpiOptions.Default;
 }

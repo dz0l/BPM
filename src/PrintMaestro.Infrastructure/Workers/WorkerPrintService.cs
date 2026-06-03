@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using PrintMaestro.Core.Configuration;
 using PrintMaestro.Core.IPC;
 using PrintMaestro.Core.Printing;
 using Serilog;
@@ -22,9 +23,11 @@ public sealed class WorkerPrintService : IWorkerPrintService
     private readonly WorkerProcessHost _pdfHost;
     private readonly WorkerProcessHost _imageHost;
     private readonly WorkerProcessHost _officeHost;
+    private readonly ISettingsStore _settingsStore;
 
-    public WorkerPrintService()
+    public WorkerPrintService(ISettingsStore settingsStore)
     {
+        _settingsStore = settingsStore;
         _pdfHost = new WorkerProcessHost(
             WorkerKind.Pdf,
             WorkerPipeNames.Pdf,
@@ -44,7 +47,7 @@ public sealed class WorkerPrintService : IWorkerPrintService
             Path.Combine("workers", "office"));
     }
 
-    public Task<PrintResult> PrintAsync(WorkerKind kind, PrintRequest request, CancellationToken cancellationToken)
+    public async Task<PrintResult> PrintAsync(WorkerKind kind, PrintRequest request, CancellationToken cancellationToken)
     {
         var host = kind switch
         {
@@ -54,7 +57,14 @@ public sealed class WorkerPrintService : IWorkerPrintService
             _ => throw new ArgumentOutOfRangeException(nameof(kind))
         };
 
-        return host.PrintAsync(request, cancellationToken);
+        var pdfRenderDpi = PdfRenderDpiOptions.Default;
+        if (kind == WorkerKind.Pdf)
+        {
+            var appSettings = await _settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            pdfRenderDpi = appSettings.PdfRenderDpi;
+        }
+
+        return await host.PrintAsync(request, pdfRenderDpi, cancellationToken).ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
@@ -83,7 +93,7 @@ internal sealed class WorkerProcessHost : IAsyncDisposable
         _workingDirectory = workingDirectory;
     }
 
-    public async Task<PrintResult> PrintAsync(PrintRequest request, CancellationToken cancellationToken)
+    public async Task<PrintResult> PrintAsync(PrintRequest request, int pdfRenderDpi, CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -96,7 +106,10 @@ internal sealed class WorkerProcessHost : IAsyncDisposable
                 Command = WorkerCommandType.Print,
                 JobId = request.JobId,
                 FilePath = request.FilePath,
-                Settings = request.Settings
+                Settings = request.Settings,
+                PdfRenderDpi = _kind == WorkerKind.Pdf
+                    ? pdfRenderDpi
+                    : PdfRenderDpiOptions.Default
             };
 
             var response = await WorkerPipeHost.SendRequestAsync(

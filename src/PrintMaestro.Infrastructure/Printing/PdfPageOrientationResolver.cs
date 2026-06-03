@@ -4,6 +4,10 @@ using UglyToad.PdfPig;
 
 namespace PrintMaestro.Infrastructure.Printing;
 
+/// <summary>
+/// PDF metadata orientation (MediaBox/Rotate). May misdetect scanned PDFs;
+/// production printing uses rendered page pixels in <see cref="Workers.PdfPrintExecutor"/>.
+/// </summary>
 public static class PdfPageOrientationResolver
 {
     public static PaperOrientation Resolve(
